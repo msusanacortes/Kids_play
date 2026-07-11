@@ -54,7 +54,7 @@ Kids Video App 📺👧👦
 
 | 📘 Curso | 👨‍🏫 Profesor |
 |:---:|:---:|
-| <span style="font-size:14px;">**ID 2278**<br>*Vibe Coding, desarrollo de<br>prototipos digitales con IA*</span> | <span style="font-size:14px;">**Netzahualpilli Delgado**</span> |
+| <span style="font-size:14px;">**ID 2278**<br>*Vibe Coding, desarrollo de<br>prototipos digitales con IA*</span> | <span style="font-size:14px;">**Netzahualpilli Delgado Figueroa**</span> | *Alumna: Martha Susana Cortes Romero*
 
 </div>
 
