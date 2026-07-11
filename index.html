@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kids Video App</title>
     
+    <!-- Tailwind CSS para los estilos -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React y ReactDOM -->
     <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Babel para compilar JSX en el navegador -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <style>
-        /* Estilos base para ocultar la barra de desplazamiento según el diseño original */
+        /* Estilos base para ocultar la barra de desplazamiento */
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -27,7 +32,7 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // --- COMPONENTES DE ÍCONOS (Simulando lucide-react) ---
+        // --- COMPONENTES DE ÍCONOS (Reemplazando lucide-react para uso sin bundler) ---
         const Icon = ({ children, className = "", ...props }) => (
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
                 {children}
@@ -35,12 +40,7 @@
         );
 
         const Play = (props) => <Icon {...props}><polygon points="5 3 19 12 5 21 5 3"></polygon></Icon>;
-        // Para el corazón, permitimos que el 'fill' sea heredado por clases como 'fill-current'
-        const Heart = ({ className = "", ...props }) => (
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>
-                <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
-            </svg>
-        );
+        const Heart = (props) => <Icon {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path></Icon>;
         const Clock = (props) => <Icon {...props}><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></Icon>;
         const Home = (props) => <Icon {...props}><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></Icon>;
         const Lock = (props) => <Icon {...props}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></Icon>;
@@ -75,20 +75,19 @@
             { name: 'Educativo', icon: BookOpen }
         ];
 
-        // --- COMPONENTE PRINCIPAL APP ---
         function App() {
             const [profiles, setProfiles] = useState(INITIAL_PROFILES);
             const [videos, setVideos] = useState(INITIAL_VIDEOS);
             const [activeProfileId, setActiveProfileId] = useState(null);
             
-            // Vistas: 'selector', 'kids_home', 'kids_history', 'kids_favorites', 'parent_gate', 'parent_dashboard', 'player'
+            // Vistas: 'selector', 'kids_home', 'kids_history', 'kids_favorites', 'parent_gate', 'parent_dashboard'
             const [currentView, setCurrentView] = useState('selector');
             const [activeCategory, setActiveCategory] = useState('Todos');
             const [playingVideo, setPlayingVideo] = useState(null);
 
             const activeProfile = profiles.find(p => p.id === activeProfileId);
 
-            // --- FUNCIONES DE LÓGICA ---
+            // Lógica
             const handleLogin = (id) => {
                 setActiveProfileId(id);
                 setCurrentView('kids_home');
@@ -113,7 +112,6 @@
             };
 
             const playVideo = (video) => {
-                // Añadir al historial
                 setProfiles(profiles.map(profile => {
                     if (profile.id === activeProfileId) {
                         const newHistory = [video.id, ...profile.history.filter(id => id !== video.id)].slice(0, 20);
@@ -125,29 +123,19 @@
             };
 
             const addNewVideo = (newVideoData) => {
-                const newVideo = {
-                    ...newVideoData,
-                    id: Date.now(),
-                    isNew: true,
-                };
+                const newVideo = { ...newVideoData, id: Date.now(), isNew: true };
                 setVideos([newVideo, ...videos]);
                 setCurrentView('kids_home');
             };
 
-            // --- COMPONENTES DE LA INTERFAZ ---
-
-            // 1. Selector de Perfiles (Pantalla Inicial)
+            // 1. Selector de Perfiles
             if (currentView === 'selector') {
                 return (
                     <div className="flex flex-col items-center justify-center min-h-screen bg-blue-50 p-6 font-sans">
                         <h1 className="text-4xl font-extrabold text-blue-600 mb-8 text-center drop-shadow-sm">¿Quién está viendo hoy?</h1>
                         <div className="grid grid-cols-2 gap-6 w-full max-w-sm">
                             {profiles.map(profile => (
-                                <button
-                                    key={profile.id}
-                                    onClick={() => handleLogin(profile.id)}
-                                    className={`${profile.color} rounded-3xl p-6 flex flex-col items-center justify-center shadow-lg transform transition active:scale-95`}
-                                >
+                                <button key={profile.id} onClick={() => handleLogin(profile.id)} className={`${profile.color} rounded-3xl p-6 flex flex-col items-center justify-center shadow-lg transform transition active:scale-95`}>
                                     <span className="text-6xl mb-4">{profile.avatar}</span>
                                     <span className="text-xl font-bold text-white">{profile.name}</span>
                                 </button>
@@ -157,33 +145,27 @@
                 );
             }
 
-            // 2. Puerta Parental (Seguridad simple)
+            // 2. Puerta Parental
             if (currentView === 'parent_gate') {
                 return (
-                    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800 p-6 text-white font-sans max-w-md mx-auto">
+                    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-800 p-6 text-white font-sans">
                         <Lock className="w-16 h-16 mb-6 text-yellow-400" />
                         <h2 className="text-2xl font-bold mb-4 text-center">Zona para Papás</h2>
                         <p className="mb-8 text-center text-gray-300">Para entrar, resuelve la siguiente operación:</p>
                         <div className="text-4xl font-bold mb-8">7 x 3 = ?</div>
                         <div className="grid grid-cols-3 gap-4 w-full max-w-xs">
                             {[14, 21, 28].map(ans => (
-                                <button
-                                    key={ans}
-                                    onClick={() => ans === 21 ? setCurrentView('parent_dashboard') : setCurrentView('kids_home')}
-                                    className="bg-gray-700 p-4 rounded-xl text-xl font-bold active:bg-gray-600 hover:bg-gray-600 transition"
-                                >
+                                <button key={ans} onClick={() => ans === 21 ? setCurrentView('parent_dashboard') : setCurrentView('kids_home')} className="bg-gray-700 p-4 rounded-xl text-xl font-bold active:bg-gray-600">
                                     {ans}
                                 </button>
                             ))}
                         </div>
-                        <button onClick={() => setCurrentView('kids_home')} className="mt-12 text-gray-400 underline hover:text-white transition">
-                            Volver
-                        </button>
+                        <button onClick={() => setCurrentView('kids_home')} className="mt-12 text-gray-400 underline">Volver</button>
                     </div>
                 );
             }
 
-            // 3. Dashboard Parental (Añadir Videos)
+            // 3. Dashboard Parental
             if (currentView === 'parent_dashboard') {
                 const ParentDashboard = () => {
                     const [title, setTitle] = useState('');
@@ -196,52 +178,37 @@
                     };
 
                     return (
-                        <div className="min-h-screen bg-gray-100 p-4 sm:p-6 font-sans max-w-md mx-auto shadow-xl">
+                        <div className="min-h-screen bg-gray-100 p-4 sm:p-6 font-sans">
                             <div className="flex justify-between items-center mb-6">
                                 <h2 className="text-2xl font-bold text-gray-800">Panel de Control</h2>
-                                <button onClick={() => setCurrentView('kids_home')} className="text-blue-600 font-bold hover:text-blue-800">Cerrar</button>
+                                <button onClick={() => setCurrentView('kids_home')} className="text-blue-600 font-bold">Cerrar</button>
                             </div>
                             
                             <div className="bg-white p-6 rounded-2xl shadow-sm mb-6">
                                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
-                                    <Plus className="text-green-500 w-6 h-6" /> Añadir Nuevo Video
+                                    <Plus className="text-green-500 w-5 h-5" /> Añadir Nuevo Video
                                 </h3>
                                 <form onSubmit={handleSubmit} className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Título del Video</label>
-                                        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej: Canción del Abecedario" className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none" required />
+                                        <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Ej: Canción del Abecedario" className="w-full p-3 border rounded-xl" required />
                                     </div>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Categoría</label>
-                                        <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none">
+                                        <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full p-3 border rounded-xl">
                                             <option>Música</option>
                                             <option>Animación</option>
                                             <option>Educativo</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-1">URL de Portada (Simulada)</label>
-                                        <input type="text" value={thumbnail} onChange={(e) => setThumbnail(e.target.value)} className="w-full p-3 border border-gray-300 rounded-xl bg-gray-50 text-gray-500 outline-none" readOnly />
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">URL de Portada</label>
+                                        <input type="text" value={thumbnail} onChange={(e) => setThumbnail(e.target.value)} className="w-full p-3 border rounded-xl bg-gray-50 text-gray-500" readOnly />
                                     </div>
                                     <button type="submit" className="w-full bg-blue-600 text-white font-bold py-3 rounded-xl hover:bg-blue-700 active:scale-95 transition">
                                         Guardar y Publicar
                                     </button>
                                 </form>
-                            </div>
-                            
-                            <div className="bg-white p-6 rounded-2xl shadow-sm">
-                                <h3 className="text-xl font-bold mb-4">Videos Agregados Recientemente</h3>
-                                <div className="space-y-3">
-                                    {videos.map(v => (
-                                        <div key={v.id} className="flex justify-between items-center p-3 border border-gray-100 rounded-xl">
-                                            <div>
-                                                <p className="font-bold text-gray-800">{v.title}</p>
-                                                <p className="text-xs text-gray-500">{v.category}</p>
-                                            </div>
-                                            {v.isNew && <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full font-bold">Nuevo</span>}
-                                        </div>
-                                    ))}
-                                </div>
                             </div>
                         </div>
                     );
@@ -249,50 +216,42 @@
                 return <ParentDashboard />;
             }
 
-            // 4. Modal de Reproductor de Video
+            // Modal de Reproductor
             const VideoPlayerModal = () => {
                 if (!playingVideo) return null;
                 return (
-                    <div className="fixed inset-0 bg-black z-50 flex flex-col max-w-md mx-auto">
+                    <div className="fixed inset-0 bg-black z-50 flex flex-col">
                         <div className="flex justify-between items-center p-4 bg-gray-900 text-white">
-                            <h3 className="font-bold truncate pr-4">{playingVideo.title}</h3>
-                            <button onClick={() => setPlayingVideo(null)} className="p-2 bg-gray-800 rounded-full hover:bg-gray-700 transition">
+                            <h3 className="font-bold truncate">{playingVideo.title}</h3>
+                            <button onClick={() => setPlayingVideo(null)} className="p-2 bg-gray-800 rounded-full">
                                 <X className="w-6 h-6" />
                             </button>
                         </div>
                         <div className="flex-1 flex items-center justify-center bg-black relative">
-                            <img src={playingVideo.thumbnail} alt={playingVideo.title} className="w-full h-full object-cover opacity-30 absolute" />
-                            <div className="relative z-10 flex flex-col items-center text-center p-4">
-                                <Play className="w-24 h-24 text-white opacity-90 mb-4 animate-pulse drop-shadow-xl" fill="currentColor" />
-                                <p className="text-white text-xl font-bold drop-shadow-md">Simulando Video...</p>
-                                <p className="text-gray-300 mt-2">¡Imagina que aquí se reproduce el video completo!</p>
+                            <img src={playingVideo.thumbnail} alt={playingVideo.title} className="w-full h-full object-cover opacity-50 blur-sm absolute" />
+                            <div className="relative z-10 flex flex-col items-center">
+                                <Play className="w-24 h-24 text-white opacity-80 mb-4 animate-pulse" fill="currentColor" />
+                                <p className="text-white text-xl font-bold">Simulando Video...</p>
                             </div>
                         </div>
                     </div>
                 );
             };
 
-            // --- RENDERIZADO PRINCIPAL (VISTA DE NIÑOS) ---
-            
-            // Filtrar videos según la vista y categoría
+            // Vistas principales (Niños)
             let displayVideos = [];
-            if (currentView === 'kids_history') {
-                displayVideos = activeProfile.history.map(id => videos.find(v => v.id === id)).filter(Boolean);
-            } else if (currentView === 'kids_favorites') {
-                displayVideos = activeProfile.favorites.map(id => videos.find(v => v.id === id)).filter(Boolean);
-            } else {
-                displayVideos = activeCategory === 'Todos' ? videos : videos.filter(v => v.category === activeCategory);
-            }
+            if (currentView === 'kids_history') displayVideos = activeProfile.history.map(id => videos.find(v => v.id === id)).filter(Boolean);
+            else if (currentView === 'kids_favorites') displayVideos = activeProfile.favorites.map(id => videos.find(v => v.id === id)).filter(Boolean);
+            else displayVideos = activeCategory === 'Todos' ? videos : videos.filter(v => v.category === activeCategory);
 
             const newReleases = videos.filter(v => v.isNew);
 
             return (
                 <div className="min-h-screen bg-gray-50 font-sans pb-24 max-w-md mx-auto relative shadow-2xl overflow-hidden">
-                    
-                    {/* Top Header */}
+                    {/* Encabezado */}
                     <div className="bg-white px-4 pt-6 pb-4 rounded-b-3xl shadow-sm flex justify-between items-center sticky top-0 z-20">
-                        <div className="flex items-center gap-3 cursor-pointer group" onClick={handleLogout}>
-                            <div className={`${activeProfile.color} w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-inner border-2 border-white group-active:scale-95 transition`}>
+                        <div className="flex items-center gap-3 cursor-pointer" onClick={handleLogout}>
+                            <div className={`${activeProfile.color} w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-inner border-2 border-white`}>
                                 {activeProfile.avatar}
                             </div>
                             <div>
@@ -300,31 +259,26 @@
                                 <h1 className="text-xl font-extrabold text-gray-800">{activeProfile.name}</h1>
                             </div>
                         </div>
-                        <button onClick={() => setCurrentView('parent_gate')} className="p-3 bg-gray-100 rounded-full text-gray-500 active:bg-gray-200 hover:bg-gray-200 transition">
+                        <button onClick={() => setCurrentView('parent_gate')} className="p-3 bg-gray-100 rounded-full text-gray-500 active:bg-gray-200">
                             <Lock className="w-5 h-5" />
                         </button>
                     </div>
 
                     <div className="p-4 space-y-6">
-                        
-                        {/* Banner de Novedades (Solo en Inicio) */}
+                        {/* Videos Nuevos */}
                         {currentView === 'kids_home' && newReleases.length > 0 && (
                             <section>
                                 <h2 className="text-xl font-extrabold text-gray-800 mb-3 flex items-center gap-2">
-                                    <Sparkles className="text-yellow-500 w-6 h-6" /> ¡Videos Nuevos!
+                                    <Sparkles className="text-yellow-500 w-5 h-5" /> ¡Videos Nuevos!
                                 </h2>
                                 <div className="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
                                     {newReleases.map(video => (
-                                        <div key={video.id} onClick={() => playVideo(video)} className="snap-center shrink-0 w-64 relative rounded-3xl overflow-hidden shadow-lg transform transition active:scale-95 cursor-pointer">
-                                            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10 animate-bounce shadow-md">
-                                                ¡NUEVO!
-                                            </div>
+                                        <div key={video.id} onClick={() => playVideo(video)} className="snap-center shrink-0 w-64 relative rounded-3xl overflow-hidden shadow-lg cursor-pointer">
+                                            <div className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full z-10 animate-bounce">¡NUEVO!</div>
                                             <img src={video.thumbnail} alt={video.title} className="w-full h-40 object-cover" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                                             <div className="absolute inset-0 flex items-center justify-center">
-                                                <div className="bg-white/30 p-3 rounded-full backdrop-blur-sm">
-                                                    <Play className="w-8 h-8 text-white" fill="currentColor" />
-                                                </div>
+                                                <div className="bg-white/30 p-3 rounded-full backdrop-blur-sm"><Play className="w-8 h-8 text-white" fill="currentColor" /></div>
                                             </div>
                                             <div className="absolute bottom-0 left-0 right-0 p-4">
                                                 <h3 className="text-white font-bold text-lg leading-tight truncate">{video.title}</h3>
@@ -336,41 +290,28 @@
                             </section>
                         )}
 
-                        {/* Selector de Categorías (Solo en Inicio) */}
+                        {/* Categorías */}
                         {currentView === 'kids_home' && (
                             <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar">
                                 {CATEGORIES.map(cat => {
                                     const IconComponent = cat.icon;
                                     const isActive = activeCategory === cat.name;
                                     return (
-                                        <button
-                                            key={cat.name}
-                                            onClick={() => setActiveCategory(cat.name)}
-                                            className={`flex items-center gap-2 px-5 py-3 rounded-full font-bold whitespace-nowrap transition-colors ${
-                                                isActive ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                                            }`}
-                                        >
-                                            <IconComponent className={`w-5 h-5 ${isActive ? 'text-white' : 'text-blue-500'}`} />
-                                            {cat.name}
+                                        <button key={cat.name} onClick={() => setActiveCategory(cat.name)} className={`flex items-center gap-2 px-5 py-3 rounded-full font-bold whitespace-nowrap transition-colors ${isActive ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-600 border border-gray-200'}`}>
+                                            <IconComponent className={`w-5 h-5 ${isActive ? 'text-white' : 'text-blue-500'}`} /> {cat.name}
                                         </button>
                                     );
                                 })}
                             </div>
                         )}
 
-                        {/* Feed de Videos */}
+                        {/* Lista de Videos */}
                         <section>
                             <h2 className="text-xl font-extrabold text-gray-800 mb-4">
-                                {currentView === 'kids_history' ? 'Lo que has visto' : 
-                                 currentView === 'kids_favorites' ? 'Tus Favoritos' : 
-                                 activeCategory === 'Todos' ? 'Para ti' : activeCategory}
+                                {currentView === 'kids_history' ? 'Lo que has visto' : currentView === 'kids_favorites' ? 'Tus Favoritos' : activeCategory === 'Todos' ? 'Para ti' : activeCategory}
                             </h2>
-                            
                             {displayVideos.length === 0 ? (
                                 <div className="text-center py-10 bg-white rounded-3xl border-2 border-dashed border-gray-200">
-                                    <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                                        <Star className="w-10 h-10 text-gray-300" />
-                                    </div>
                                     <p className="text-gray-500 font-bold text-lg">¡Aún no hay videos aquí!</p>
                                 </div>
                             ) : (
@@ -379,20 +320,15 @@
                                         const isFavorite = activeProfile.favorites.includes(video.id);
                                         return (
                                             <div key={video.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col relative">
-                                                <button 
-                                                    onClick={(e) => { e.stopPropagation(); toggleFavorite(video.id); }}
-                                                    className="absolute top-2 right-2 p-2 bg-white/80 backdrop-blur-sm rounded-full z-10 shadow-sm active:scale-90 transition hover:bg-white"
-                                                >
-                                                    <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500' : 'text-gray-400'}`} fill={isFavorite ? 'currentColor' : 'none'} />
+                                                <button onClick={(e) => { e.stopPropagation(); toggleFavorite(video.id); }} className="absolute top-2 right-2 p-2 bg-white/80 backdrop-blur-sm rounded-full z-10 shadow-sm active:scale-90 transition">
+                                                    <Heart className={`w-5 h-5 ${isFavorite ? 'text-red-500' : 'text-gray-400'}`} fill={isFavorite ? "currentColor" : "none"} />
                                                 </button>
-                                                
                                                 <div onClick={() => playVideo(video)} className="relative cursor-pointer group">
                                                     <img src={video.thumbnail} alt={video.title} className="w-full h-32 object-cover" />
-                                                    <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 group-active:bg-black/40 transition flex items-center justify-center">
-                                                        <Play className="w-10 h-10 text-white opacity-90 drop-shadow-md" fill="currentColor" />
+                                                    <div className="absolute inset-0 bg-black/20 group-active:bg-black/40 transition flex items-center justify-center">
+                                                        <Play className="w-10 h-10 text-white opacity-80 drop-shadow-md" fill="currentColor" />
                                                     </div>
                                                 </div>
-                                                
                                                 <div className="p-3">
                                                     <h3 className="font-bold text-gray-800 text-sm leading-tight line-clamp-2">{video.title}</h3>
                                                     <p className="text-xs text-gray-500 mt-1">{video.category}</p>
@@ -403,51 +339,28 @@
                                 </div>
                             )}
                         </section>
-
                     </div>
 
-                    {/* Navegación Inferior (Fija) */}
+                    {/* Navegación Inferior */}
                     <div className="fixed bottom-0 w-full max-w-md bg-white border-t border-gray-100 px-6 py-4 flex justify-between items-center rounded-t-3xl shadow-[0_-4px_20px_rgba(0,0,0,0.05)] z-20">
-                        <NavButton 
-                            icon={Home} 
-                            label="Inicio" 
-                            isActive={currentView === 'kids_home'} 
-                            onClick={() => setCurrentView('kids_home')} 
-                        />
-                        <NavButton 
-                            icon={Clock} 
-                            label="Historial" 
-                            isActive={currentView === 'kids_history'} 
-                            onClick={() => setCurrentView('kids_history')} 
-                        />
-                        <NavButton 
-                            icon={Heart} 
-                            label="Favoritos" 
-                            isActive={currentView === 'kids_favorites'} 
-                            onClick={() => setCurrentView('kids_favorites')} 
-                        />
+                        <NavButton icon={Home} label="Inicio" isActive={currentView === 'kids_home'} onClick={() => setCurrentView('kids_home')} />
+                        <NavButton icon={Clock} label="Historial" isActive={currentView === 'kids_history'} onClick={() => setCurrentView('kids_history')} />
+                        <NavButton icon={Heart} label="Favoritos" isActive={currentView === 'kids_favorites'} onClick={() => setCurrentView('kids_favorites')} />
                     </div>
 
-                    {/* Modal Reproductor */}
                     <VideoPlayerModal />
-
                 </div>
             );
         }
 
-        // Componente auxiliar para botones de navegación
+        // Componente Navegación
         function NavButton({ icon: IconComponent, label, isActive, onClick }) {
             return (
-                <button 
-                    onClick={onClick} 
-                    className={`flex flex-col items-center justify-center w-16 transition-transform ${isActive ? 'scale-110' : 'opacity-70 hover:opacity-100'}`}
-                >
+                <button onClick={onClick} className={`flex flex-col items-center justify-center w-16 transition-transform ${isActive ? 'scale-110' : 'opacity-70 hover:opacity-100'}`}>
                     <div className={`p-2 rounded-2xl mb-1 ${isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-500'}`}>
-                        <IconComponent className="w-7 h-7" fill={isActive ? 'currentColor' : 'none'} />
+                        <IconComponent className="w-7 h-7" fill={isActive ? "currentColor" : "none"} />
                     </div>
-                    <span className={`text-[10px] font-extrabold ${isActive ? 'text-blue-600' : 'text-gray-500'}`}>
-                        {label}
-                    </span>
+                    <span className={`text-[10px] font-extrabold ${isActive ? 'text-blue-600' : 'text-gray-500'}`}>{label}</span>
                 </button>
             );
         }
